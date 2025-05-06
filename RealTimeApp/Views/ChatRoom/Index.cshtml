@@ -1,0 +1,37 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<input class="from form-control" id="username" name="username" />
+<input class="from form-control" id="msg" name="msg" />
+<input type="button" class="bt btn-success" value="Send" onclick="SendMessage()"/>
+<ul id="messages">
+
+</ul>
+<div id="newUserAlert"></div>
+<script src="~/lib/jquery/dist/jquery.js" ></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js" integrity="sha512-7SRCYIJtR6F8ocwW7UxW6wGKqbSyqREDbfCORCbGLatU0iugBLwyOXpzhkPyHIFdBO0K2VCu57fvP2Twgx1o2A==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    var hub = new signalR.HubConnectionBuilder().withUrl("/comment").build();
+    hub.start().then(function(){
+        console.log("Hub Connection Succedded");
+    });
+
+    hub.on("NewUserConnect" , function(){
+        $("#newUserAlert").append("userConnected<br>");
+    });
+
+    hub.on("NewMsgArriveNotication", function (name,msg) {
+
+        $("#messages").append(`<li>${name} : ${msg}</li>`);
+    })
+
+    function SendMessage() {
+        let name = $("#username").val();
+        let msg = $("#msg").val();
+
+        hub.invoke("UserSendMessage", name, msg);
+    }
+</script>

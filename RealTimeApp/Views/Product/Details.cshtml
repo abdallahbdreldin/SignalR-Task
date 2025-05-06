@@ -1,0 +1,89 @@
+﻿@model RealTimeApp.Models.Product
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Product</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Price)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Price)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+<h3>Comments</h3>
+<div>
+    <input type="text" id="commentInput" placeholder="Write a comment..." class="form-control" />
+    <input type="button" class="btn btn-success" value="comment" onclick="SendComment()"/>
+</div>
+
+<ul id="commentsList" class="mt-3">
+    @foreach (var comment in Model.Comments)
+    {
+        <li>@comment.CommentContent</li>
+    }
+</ul>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+    <script>
+        const productId = "@Model.Id";
+
+        const hub = new signalR.HubConnectionBuilder()
+            .withUrl("/comments")
+            .build();
+
+        hub.start().then(function () {
+            console.log("Hub Connection Success");
+            hub.invoke("JoinProductGroup", productId);
+        });
+
+
+        hub.on("newComment", function (comment) {
+
+            $("#commentsList").append(`<li>${comment}</li>`);
+        });
+
+        hub.on("NewCommentNotification", function (comment) {
+            $("#commentsList").append(`<li>${comment}</li>`);
+        });
+
+        function SendComment() {
+            const comment = $("#commentInput").val();
+            hub.invoke("SendComment", productId, comment);
+            $("#commentInput").val("");
+        }
+    </script>
+}
+
+
+

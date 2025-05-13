@@ -1,7 +1,7 @@
 # SignalR Task Using MVC
 
 ## Task Summary
-This task is a training exercise for building a real-time application using SignalR in ASP.NET Core MVC. The focus is on implementing a real-time comment/review system for products
+This task is a training exercise for building a real-time application using SignalR in ASP.NET Core MVC . The focus is on implementing a real-time comment/review system for products
 
 ### Features:
 - **Browse the list of available products**
